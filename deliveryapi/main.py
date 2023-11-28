@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI
 
 from .drivers.views import router as router_driver
+from .orders.views import router as router_order
 
 # from .config import Settings
 from .db import db
@@ -15,6 +16,7 @@ app = FastAPI(
 # app.include_router(items_views.router)
 # app.include_router(orders_views.router)
 app.include_router(router_driver)
+app.include_router(router_order)
 
 # @lru_cache
 # def get_settings():
