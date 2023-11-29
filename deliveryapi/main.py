@@ -1,34 +1,36 @@
-from functools import lru_cache
-from typing import Annotated
+from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 
-from .drivers.views import router as router_driver
-from .orders.views import router as router_order
+from deliveryapi.core.models import Base, db_helper
+from deliveryapi.telegram.views import router as router_driver
+from deliveryapi.admin import router as router_admin
 
-# from .config import Settings
-from .db import db
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with db_helper.engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    yield
+
+
+tags_metadata = [
+    {
+        "name": "Admin",
+        "description": "Административные функции",
+    },
+    {
+        "name": "Drivers",
+        "description": "Функции работы с таблицей водителей",
+    },
+]
 
 app = FastAPI(
-    title='API сервиса доставки Термокит'
+    title="API сервиса доставки Термокит",
+    lifespan=lifespan,
+    openapi_tags=tags_metadata,
 )
 
-# app.include_router(items_views.router)
-# app.include_router(orders_views.router)
 app.include_router(router_driver)
-app.include_router(router_order)
-
-# @lru_cache
-# def get_settings():
-#     return Settings()
-
-
-# @app.get("/info")
-# async def info(settings: Annotated[Settings, Depends(get_settings)]):
-#     return {
-#         "app_name": settings.app_name,
-#         "db_driver": settings.db_driver,
-#     }
-
-
-
+app.include_router(router_admin)
