@@ -1,79 +1,72 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from deliveryapi.core.models import db_helper, Order
-from .schemas import OrderBase, OrderCreate
-from .dependencies import order_by_id, order_by_id_search
+from deliveryapi.core.models import db_helper, Item
+from .schemas import ItemBase, ItemCreate
+from .dependencies import item_by_id
 from . import crud
 
-router = APIRouter(prefix="/orders", tags=["Orders"])
+router = APIRouter(prefix="/items", tags=["Items"])
 
 
 @router.get(
     path="/",
-    description="Возвращает список всех доставок",
-    name="Список доставок",
-    response_model=list[OrderBase],
+    description="Возвращает список всех позиций",
+    name="Список позиций",
+    response_model=list[ItemBase],
 )
-async def get_orders(session: AsyncSession = Depends(db_helper.sesion_dependency)):
-    orders = await crud.get_orders(session)
-    return orders
+async def get_items(session: AsyncSession = Depends(db_helper.sesion_dependency)):
+    items = await crud.get_items(session)
+    return items
 
 
 @router.get(
-    path="/{order_id}",
-    description="Возвращает данные доставки по id",
-    name="Доставка по id",
-    response_model=OrderBase,
+    path="/{item_id}",
+    description="Возвращает данные позиции по id",
+    name="Позиция по id",
+    response_model=ItemBase,
 )
-async def get_order_by_id(order: Order = Depends(order_by_id)):
-    return order
-
-
-@router.get(
-    path="/search/{id_search}",
-    description="Возвращает данные доставки по id_search",
-    name="Доставка по id_search",
-    response_model=OrderBase,
-)
-async def get_order_by_id_search(order: Order = Depends(order_by_id_search)):
-    return order
+async def get_item_by_id(item: Item = Depends(item_by_id)):
+    return item
 
 
 @router.patch(
-    path="/delivered/{order_id}",
-    description="Установка признака доставки",
+    path="/{item_id}/shipped",
+    description="Установка доставленного количества",
     name="Доставка",
-    response_model=OrderBase,
+    response_model=ItemBase,
 )
-async def auth_driver(
-    order: Order = Depends(order_by_id),
+async def shipped_item(
+    quantity_shipped: float,
+    item: Item = Depends(item_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    return await crud.delivered_order(order=order, session=session)
+    return await crud.delivered_item(
+        item=item, quantity_shipped=quantity_shipped, session=session
+    )
 
 
 @router.post(
     path="/",
-    description="Создание доставки",
-    name="Создание доставки",
-    response_model=OrderBase,
+    description="Создание позиции доставки",
+    name="Создание позиции",
+    response_model=ItemBase,
 )
 async def create_order(
-    order_in: OrderCreate,
+    item_in: ItemCreate,
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    return await crud.create_order(order_in=order_in, session=session)
+    return await crud.create_item(item_in=item_in, session=session)
 
 
 @router.delete(
-    path="/{order_id}",
-    description="Удаление доставки",
-    name="Удаление доставки",
+    path="/{item_id}",
+    description="Удаление позиции доставки",
+    name="Удаление позиции",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-async def auth_driver(
-    order: Order = Depends(order_by_id),
+async def delete_item(
+    item: Item = Depends(item_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    return await crud.delete_order(order=order, session=session)
+    return await crud.delete_item(item=item, session=session)

@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from deliveryapi.core.models import Base, db_helper
-from deliveryapi.telegram.views import router as router_driver
 from deliveryapi.admin import router as router_admin
 
 
@@ -32,5 +31,4 @@ app = FastAPI(
     openapi_tags=tags_metadata,
 )
 
-app.include_router(router_driver)
 app.include_router(router_admin)
