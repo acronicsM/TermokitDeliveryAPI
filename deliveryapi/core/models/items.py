@@ -1,4 +1,4 @@
-from sqlalchemy import String
+from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
@@ -16,4 +16,7 @@ class Item(Base):
     sum: Mapped[float]
     discount: Mapped[float]
     bonus: Mapped[float]
-    order_id: Mapped[str]
+
+    order_id: Mapped[str] = mapped_column(
+        ForeignKey("orders.id"),
+    )
