@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from deliveryapi.admin import router as router_admin
-from deliveryapi.telegram import router as router_tg
+from deliveryapi.telegram.views import router as router_tg
 
 
 @asynccontextmanager
