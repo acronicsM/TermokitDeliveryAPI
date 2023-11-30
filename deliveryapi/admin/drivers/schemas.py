@@ -9,3 +9,7 @@ class DriverBase(BaseModel):
 
 class DriverAuth(DriverBase):
     pass
+
+
+class DriverCreate(DriverBase):
+    pass
