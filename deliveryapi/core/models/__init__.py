@@ -4,9 +4,11 @@ __all__ = (
     "db_helper",
     "Driver",
     "Order",
+    "Item",
 )
 
 from .base import Base
 from .db_helper import DatabaseHelper, db_helper
 from .drivers import Driver
 from .orders import Order
+from .items import Item

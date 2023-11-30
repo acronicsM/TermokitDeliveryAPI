@@ -76,4 +76,4 @@ async def auth_driver(
     order: Order = Depends(order_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    return await crud.delivered_order(order=order, session=session)
+    return await crud.delete_order(order=order, session=session)

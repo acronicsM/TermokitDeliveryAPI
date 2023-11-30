@@ -1,4 +1,4 @@
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,7 +13,8 @@ async def get_order(order_id: int, session: AsyncSession) -> Order | None:
 async def get_order_id_search(id_search: int, session: AsyncSession) -> Order | None:
     stmt = select(Order).where(Order.id_search == id_search)
     result: Result = await session.execute(stmt)
-    return result.first()
+    result = result.scalars().one()
+    return result
 
 
 async def get_orders(session: AsyncSession) -> list[Order]:
