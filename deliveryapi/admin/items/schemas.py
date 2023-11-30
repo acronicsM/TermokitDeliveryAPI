@@ -12,7 +12,6 @@ class ItemBase(BaseModel):
     sum: float
     discount: float
     bonus: float
-    order_id: str
 
 
 class ItemCreate(ItemBase):
