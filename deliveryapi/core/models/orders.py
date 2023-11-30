@@ -7,6 +7,7 @@ from .base import Base
 
 if TYPE_CHECKING:
     from .drivers import Driver
+    from .items import Item
 
 
 class Order(Base):
@@ -25,3 +26,4 @@ class Order(Base):
     )
 
     driver: Mapped["Driver"] = relationship(back_populates="orders")
+    items: Mapped[list["Item"]] = relationship(back_populates="order")

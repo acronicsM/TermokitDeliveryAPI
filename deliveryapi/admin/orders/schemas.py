@@ -9,7 +9,6 @@ class OrderBase(BaseModel):
     telephone: str
     address: str
     comment: str
-    driver_id: int
     delivered: bool = False
 
 

@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 
 
-class ItemBase(BaseModel):
-    id: int
+class ItemBasis(BaseModel):
     code_item: str
     unit: str
     name: str
@@ -12,7 +11,10 @@ class ItemBase(BaseModel):
     sum: float
     discount: float
     bonus: float
-    order_id: str
+
+
+class ItemBase(ItemBasis):
+    id: int
 
 
 class ItemCreate(ItemBase):

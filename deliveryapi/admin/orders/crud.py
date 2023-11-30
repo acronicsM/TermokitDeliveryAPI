@@ -6,7 +6,7 @@ from deliveryapi.core.models import Order
 from .schemas import OrderCreate
 
 
-async def get_order(order_id: int, session: AsyncSession) -> Order | None:
+async def get_order(order_id: str, session: AsyncSession) -> Order | None:
     return await session.get(Order, order_id)
 
 

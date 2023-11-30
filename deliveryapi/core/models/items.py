@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import String, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .drivers import Order
 
 
 class Item(Base):
@@ -20,3 +25,5 @@ class Item(Base):
     order_id: Mapped[str] = mapped_column(
         ForeignKey("orders.id"),
     )
+
+    order: Mapped["Order"] = relationship(back_populates="items")
