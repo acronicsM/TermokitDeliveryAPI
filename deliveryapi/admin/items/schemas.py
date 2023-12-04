@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class ItemBasis(BaseModel):
     code_item: str
+    article_item: str
     unit: str
     name: str
     quantity: float
