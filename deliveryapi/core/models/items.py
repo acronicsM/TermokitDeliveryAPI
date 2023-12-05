@@ -13,6 +13,7 @@ class Item(Base):
     __tablename__ = "items"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     code_item: Mapped[str] = mapped_column(String(11), index=True)
+    article_item: Mapped[str] = mapped_column(String(50), index=True)
     unit: Mapped[str] = mapped_column(String(5))
     name: Mapped[str]
     quantity: Mapped[float]

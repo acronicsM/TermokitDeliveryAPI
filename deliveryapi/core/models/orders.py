@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 class Order(Base):
     __tablename__ = "orders"
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id_delivery: Mapped[str] = mapped_column(primary_key=True)
     orde_1c_number: Mapped[str] = mapped_column(String(11))
     id_search: Mapped[int]
     buyer: Mapped[str] = mapped_column(String(250))
