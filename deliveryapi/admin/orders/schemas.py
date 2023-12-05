@@ -5,7 +5,7 @@ class OrderBase(BaseModel):
     id_delivery: str
     id_search_delivery: str
     orde_1c_number: str
-    id_search: int
+    id_search: str
     buyer: str
     telephone: str
     address: str
@@ -13,5 +13,9 @@ class OrderBase(BaseModel):
     delivered: bool = False
 
 
+class OrderWithID(OrderBase):
+    id: int
+
+
 class OrderCreate(OrderBase):
-    pass
+    driver_id: int

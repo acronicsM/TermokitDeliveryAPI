@@ -1,9 +1,9 @@
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from deliveryapi.core.models import Driver
-from .schemas import DriverBase, DriverCreate
+from .schemas import DriverCreate
 
 
 async def get_driver(driver_id: int, session: AsyncSession) -> Driver | None:

@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
-from ..items.schemas import ItemBasis
+from ..items.schemas import ItemBase
 from ..orders.schemas import OrderBase
 
 
 class Order(OrderBase):
-    items: list[ItemBasis]
+    items: list[ItemBase]
 
 
 class Delivery(BaseModel):

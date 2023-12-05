@@ -1,10 +1,9 @@
-from fastapi import HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.models import Order, Item
 from .schemas import Model
-from ..drivers.dependencies import driver_by_id
-from ..orders.crud import get_order
 from ..drivers.crud import get_driver
 
 
@@ -15,7 +14,10 @@ async def upload_deliveries(model_in: Model, session: AsyncSession) -> None:
             continue
 
         for order_data in data.orders:
-            if await get_order(order_id=order_data.id, session=session):
+            stmt = select(Order).where(Order.driver_id == driver.id, Order.id_delivery == order_data.id_delivery)
+            result: Result = await session.execute(stmt)
+
+            if result.scalars().first():
                 continue
 
             order_dict = order_data.model_dump()

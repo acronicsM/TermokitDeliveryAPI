@@ -6,14 +6,21 @@ from deliveryapi.core.models import Order
 from .schemas import OrderCreate
 
 
-async def get_order(order_id: str, session: AsyncSession) -> Order | None:
+async def get_order(order_id: int, session: AsyncSession) -> Order | None:
     return await session.get(Order, order_id)
 
 
-async def get_order_id_search(id_search: int, session: AsyncSession) -> Order | None:
+async def get_order_id_search(id_search: str, session: AsyncSession) -> Order | None:
     stmt = select(Order).where(Order.id_search == id_search)
     result: Result = await session.execute(stmt)
-    result = result.scalars().one()
+    result = result.scalars().first()
+    return result
+
+
+async def get_order_id_search_delivery(id_search_delivery: str, session: AsyncSession) -> Order | None:
+    stmt = select(Order).where(Order.id_search_delivery == id_search_delivery)
+    result: Result = await session.execute(stmt)
+    result = result.scalars().first()
     return result
 
 
