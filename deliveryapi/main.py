@@ -28,10 +28,19 @@ tags_metadata = [
         "name": "Items",
         "description": "Функции работы с таблицей позиций товаров",
     },
+    {
+        "name": "Load delivery",
+        "description": "Загрузка данных из json",
+    },
+    {
+        "name": "Telegram",
+        "description": "Функции для работы водителей через телеграмм",
+    },
 ]
 
 app = FastAPI(
     title="API сервиса доставки Термокит",
+    version="1.0",
     lifespan=lifespan,
     openapi_tags=tags_metadata,
 )
