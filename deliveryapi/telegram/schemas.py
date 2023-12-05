@@ -2,9 +2,10 @@ from pydantic import BaseModel
 
 
 class OrderBase(BaseModel):
-    id: str
+    id_delivery: str
+    id_search_delivery: str
     orde_1c_number: str
-    id_search: int
+    id_search: str
     buyer: str
     telephone: str
     address: str
@@ -12,8 +13,8 @@ class OrderBase(BaseModel):
 
 
 class ItemBase(BaseModel):
-    id: int
     code_item: str
+    article_item: str
     unit: str
     name: str
     quantity: float
@@ -22,7 +23,6 @@ class ItemBase(BaseModel):
     sum: float
     discount: float
     bonus: float
-    order_id: str
 
 
 class ItemShipped(BaseModel):

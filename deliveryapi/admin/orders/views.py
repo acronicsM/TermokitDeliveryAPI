@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from deliveryapi.core.models import db_helper, Order
-from .schemas import OrderBase, OrderCreate
-from .dependencies import order_by_id, order_by_id_search
+from .schemas import OrderBase, OrderWithID, OrderCreate
+from .dependencies import order_by_id, order_by_id_search, order_by_id_search_delivery
 from . import crud
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/orders", tags=["Orders"])
     path="/",
     description="Возвращает список всех доставок",
     name="Список доставок",
-    response_model=list[OrderBase],
+    response_model=list[OrderWithID],
 )
 async def get_orders(session: AsyncSession = Depends(db_helper.sesion_dependency)):
     orders = await crud.get_orders(session)
@@ -31,12 +31,22 @@ async def get_order_by_id(order: Order = Depends(order_by_id)):
 
 
 @router.get(
-    path="/search/{id_search}",
+    path="/search/id/{id_search}",
     description="Возвращает данные доставки по id_search",
     name="Доставка по id_search",
-    response_model=OrderBase,
+    response_model=OrderWithID,
 )
 async def get_order_by_id_search(order: Order = Depends(order_by_id_search)):
+    return order
+
+
+@router.get(
+    path="/search/id_delivery/{id_search_delivery}",
+    description="Возвращает данные доставки по id_search_delivery",
+    name="Доставка по id_search_delivery",
+    response_model=OrderWithID,
+)
+async def get_order_by_id_search(order: Order = Depends(order_by_id_search_delivery)):
     return order
 
 
@@ -57,7 +67,7 @@ async def auth_driver(
     path="/",
     description="Создание доставки",
     name="Создание доставки",
-    response_model=OrderBase,
+    response_model=OrderWithID,
 )
 async def create_order(
     order_in: OrderCreate,

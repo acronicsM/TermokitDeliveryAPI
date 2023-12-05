@@ -1,22 +1,28 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 
 
-class ItemBasis(BaseModel):
+class ItemBase(BaseModel):
     code_item: str
     article_item: str
     unit: str
     name: str
-    quantity: float
-    quantity_shipped: float
-    price: float
-    sum: float
-    discount: float
-    bonus: float
+    quantity: float = Field(gt=0)
+    quantity_shipped: float = Field(ge=0)
+    price: float = Field(ge=0)
+    sum: float = Field(ge=0)
+    discount: float = Field(ge=0)
+    bonus: float = Field(ge=0)
+
+    @model_validator(mode="after")
+    def validate_quantity_shipped(self):
+        if self.quantity_shipped > self.quantity:
+            raise ValueError("Quantity shipped cannot be greater than quantity")
+        return self
 
 
-class ItemBase(ItemBasis):
+class ItemWithID(ItemBase):
     id: int
 
 
 class ItemCreate(ItemBase):
-    pass
+    order_id: int

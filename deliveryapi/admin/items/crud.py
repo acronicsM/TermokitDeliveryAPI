@@ -1,3 +1,4 @@
+from fastapi import status, HTTPException
 from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,7 +7,7 @@ from deliveryapi.core.models import Item
 from .schemas import ItemCreate
 
 
-async def get_item(item_id: str, session: AsyncSession) -> Item | None:
+async def get_item(item_id: int, session: AsyncSession) -> Item | None:
     return await session.get(Item, item_id)
 
 
@@ -29,9 +30,18 @@ async def create_item(session: AsyncSession, item_in: ItemCreate) -> Item:
     return item
 
 
-async def delivered_item(
-    session: AsyncSession, item: Item, quantity_shipped: float
-) -> Item:
+async def delivered_item(session: AsyncSession, item: Item, quantity_shipped: float) -> Item:
+    if quantity_shipped > item.quantity:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Quantity shipped cannot be greater than quantity",
+        )
+    elif quantity_shipped < 0:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Quantity shipped must be greater than or equal to 0",
+        )
+
     item.quantity_shipped = quantity_shipped
     await session.commit()
 

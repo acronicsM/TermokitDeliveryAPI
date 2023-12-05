@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from deliveryapi.core.models import db_helper, Item
-from .schemas import ItemBase, ItemCreate
+from .schemas import ItemWithID, ItemCreate
 from .dependencies import item_by_id
 from . import crud
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/items", tags=["Items"])
     path="/",
     description="Возвращает список всех позиций",
     name="Список позиций",
-    response_model=list[ItemBase],
+    response_model=list[ItemWithID],
 )
 async def get_items(session: AsyncSession = Depends(db_helper.sesion_dependency)):
     items = await crud.get_items(session)
@@ -24,7 +24,7 @@ async def get_items(session: AsyncSession = Depends(db_helper.sesion_dependency)
     path="/{item_id}",
     description="Возвращает данные позиции по id",
     name="Позиция по id",
-    response_model=ItemBase,
+    response_model=ItemCreate,
 )
 async def get_item_by_id(item: Item = Depends(item_by_id)):
     return item
@@ -34,7 +34,7 @@ async def get_item_by_id(item: Item = Depends(item_by_id)):
     path="/{item_id}/shipped",
     description="Установка доставленного количества",
     name="Доставка",
-    response_model=ItemBase,
+    response_model=ItemWithID,
 )
 async def shipped_item(
     quantity_shipped: float,
@@ -50,7 +50,7 @@ async def shipped_item(
     path="/",
     description="Создание позиции доставки",
     name="Создание позиции",
-    response_model=ItemBase,
+    response_model=ItemCreate,
 )
 async def create_order(
     item_in: ItemCreate,

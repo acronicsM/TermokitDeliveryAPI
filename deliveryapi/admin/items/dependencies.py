@@ -8,7 +8,7 @@ from deliveryapi.admin.items import crud
 
 
 async def item_by_id(
-    item_id: Annotated[str, Path],
+    item_id: Annotated[int, Path],
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ) -> Item:
     item = await crud.get_item(item_id=item_id, session=session)

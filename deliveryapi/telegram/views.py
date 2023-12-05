@@ -5,20 +5,10 @@ from deliveryapi.core.models import db_helper, Driver, Order
 from .schemas import OrderBase, ItemBase, ItemShipped
 
 from ..admin.drivers.dependencies import driver_by_id
-from ..admin.orders.dependencies import order_by_id, order_by_id_search
-from . import crud
+from ..admin.orders.dependencies import order_by_id, order_by_id_search, order_by_id_search_delivery
+from . import crud, utils
 
 router = APIRouter(prefix="/tg/{driver_id}", tags=["Telegram"])
-
-
-def check_driver_order(order: Order, driver: Driver, search=False):
-    if order.driver_id != driver.id:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Доставка {order.id_search if search else order.id} не найден",
-        )
-
-    return order
 
 
 @router.get(
@@ -39,40 +29,53 @@ async def get_driver_orders(
     path="/orders/{order_id}",
     description="Возвращает данные доставки водителя по id",
     name="Данные доставки по id",
-    response_model=list[OrderBase],
+    response_model=OrderBase,
 )
 async def get_driver_order(
     driver: Driver = Depends(driver_by_id),
     order: Order = Depends(order_by_id),
 ):
-    return check_driver_order(driver=driver, order=order)
+    return utils.check_driver_order(driver=driver, order=order)
 
 
 @router.get(
-    path="/orders/search/{search_id}",
+    path="/orders/search/id/{search_id}",
     description="Возвращает данные доставки водителя по search_id",
     name="Данные доставки по search_id",
-    response_model=list[OrderBase],
+    response_model=OrderBase,
 )
 async def search_driver_order(
     driver: Driver = Depends(driver_by_id),
     order: Order = Depends(order_by_id_search),
 ):
-    return check_driver_order(driver=driver, order=order, search=True)
+    return utils.check_driver_order(driver=driver, order=order, search=True)
+
+
+@router.get(
+    path="/orders/search/id_delivery/{id_search_delivery}",
+    description="Возвращает данные доставки водителя по id_search_delivery",
+    name="Данные доставки по id_search_delivery",
+    response_model=OrderBase,
+)
+async def search_driver_delivery(
+    driver: Driver = Depends(driver_by_id),
+    order: Order = Depends(order_by_id_search_delivery),
+):
+    return utils.check_driver_order(driver=driver, order=order, search=True)
 
 
 @router.post(
     path="/orders/shipped/{order_id}",
     description="Изменяет признак доставленной доставки",
     name="Доставка доставлена",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def post_driver_order_shipped(
     driver: Driver = Depends(driver_by_id),
     order: Order = Depends(order_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    order = check_driver_order(driver=driver, order=order)
+    order = utils.check_driver_order(driver=driver, order=order)
     await crud.get_driver_order_shipped(session=session, order=order)
 
 
@@ -87,7 +90,7 @@ async def get_driver_order_items(
     order: Order = Depends(order_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    order = check_driver_order(driver=driver, order=order)
+    order = utils.check_driver_order(driver=driver, order=order)
     items = await crud.get_driver_order_item(session=session, order=order)
 
     return items
@@ -105,7 +108,7 @@ async def post_driver_order_items(
     order: Order = Depends(order_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ):
-    order = check_driver_order(driver=driver, order=order)
+    order = utils.check_driver_order(driver=driver, order=order)
     await crud.items_shipped(session=session, items=items)
     items = await crud.get_driver_order_item(session=session, order=order)
 

@@ -22,7 +22,7 @@ async def order_by_id(
 
 
 async def order_by_id_search(
-    id_search: Annotated[int, Path],
+    id_search: Annotated[str, Path],
     session: AsyncSession = Depends(db_helper.sesion_dependency),
 ) -> Order:
     order = await crud.get_order_id_search(id_search=id_search, session=session)
@@ -31,5 +31,19 @@ async def order_by_id_search(
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Доставка {id_search} не найден",
+        detail=f"Заказ {id_search} не найден",
+    )
+
+
+async def order_by_id_search_delivery(
+    id_search_delivery: Annotated[str, Path],
+    session: AsyncSession = Depends(db_helper.sesion_dependency),
+) -> Order:
+    order = await crud.get_order_id_search_delivery(id_search_delivery=id_search_delivery, session=session)
+    if order is not None:
+        return order
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Доставка {id_search_delivery} не найден",
     )
