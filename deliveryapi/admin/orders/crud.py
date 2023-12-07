@@ -13,15 +13,15 @@ async def get_order(order_id: int, session: AsyncSession) -> Order | None:
 async def get_order_id_search(id_search: str, session: AsyncSession) -> Order | None:
     stmt = select(Order).where(Order.id_search == id_search)
     result: Result = await session.execute(stmt)
-    result = result.scalars().first()
-    return result
+    order = result.scalar_one_or_none()
+    return order
 
 
 async def get_order_id_search_delivery(id_search_delivery: str, session: AsyncSession) -> Order | None:
     stmt = select(Order).where(Order.id_search_delivery == id_search_delivery)
     result: Result = await session.execute(stmt)
-    result = result.scalars().first()
-    return result
+    order = result.scalar_one_or_none()
+    return order
 
 
 async def get_orders(session: AsyncSession) -> list[Order]:
