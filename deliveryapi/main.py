@@ -1,9 +1,12 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer
 
 from deliveryapi.admin import router as router_admin
 from deliveryapi.telegram.views import router as router_tg
+from deliveryapi.auth.views import router as router_auth
+from .utils import startup
 
 
 @asynccontextmanager
@@ -38,12 +41,20 @@ tags_metadata = [
     },
 ]
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 app = FastAPI(
     title="API сервиса доставки Термокит",
     version="1.0",
-    lifespan=lifespan,
+    # lifespan=lifespan,
     openapi_tags=tags_metadata,
 )
 
 app.include_router(router_admin)
 app.include_router(router_tg)
+app.include_router(router_auth)
+
+
+@app.on_event("startup")
+async def startup_event():
+    await startup()
