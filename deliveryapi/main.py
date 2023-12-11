@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from deliveryapi.admin import router as router_admin
 from deliveryapi.telegram.views import router as router_tg
+from deliveryapi.auth.views import router as router_auth
 
 
 @asynccontextmanager
@@ -47,3 +48,4 @@ app = FastAPI(
 
 app.include_router(router_admin)
 app.include_router(router_tg)
+app.include_router(router_auth)
