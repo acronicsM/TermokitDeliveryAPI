@@ -10,6 +10,13 @@ async def get_user(user_id: int, session: AsyncSession) -> User | None:
     return await session.get(User, user_id)
 
 
+async def get_user_by_name(name: str, session: AsyncSession) -> User | None:
+    stmt = select(User).where(User.name == name)
+    result: Result = await session.execute(stmt)
+    user = result.scalar_one_or_none()
+    return user
+
+
 async def get_users(session: AsyncSession) -> list[User]:
     stmt = select(User)
     result: Result = await session.execute(stmt)
@@ -31,7 +38,10 @@ async def del_user(session: AsyncSession, user: User) -> None:
 
 
 async def create_user(session: AsyncSession, user_in: UserCreate) -> User:
-    user = User(**user_in.model_dump())
+    user = User(
+        name=user_in.name,
+        password=User.hash_password(user_in.password),
+    )
     session.add(user)
     await session.commit()
 

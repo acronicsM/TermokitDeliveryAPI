@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+import bcrypt
+from pydantic import BaseModel, SecretStr
 
 
 class UserBase(BaseModel):
