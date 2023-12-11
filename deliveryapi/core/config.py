@@ -13,8 +13,15 @@ class DbSettings(BaseSettings):
     echo: bool = True
 
 
+class AuthJWTSettings(BaseSettings):
+    jwt_privet_key: Path = BASE_DIR / "certs" / "termokit_api"
+    jwt_public_key: Path = BASE_DIR / "certs" / "termokit_api.pub"
+    algorithm: str = "RS256"
+
+
 class Settings(BaseSettings):
     db: DbSettings = DbSettings()
+    auth: AuthJWTSettings = AuthJWTSettings()
 
 
 settings = Settings()
