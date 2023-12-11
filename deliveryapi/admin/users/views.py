@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from deliveryapi.core.models import db_helper, User
 from .schemas import UserInfo, UserCreate
-
 from .dependencies import user_by_id
 from . import crud
 
