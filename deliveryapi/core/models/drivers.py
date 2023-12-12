@@ -15,4 +15,4 @@ class Driver(Base):
     name: Mapped[str] = mapped_column(String(150))
     auth: Mapped[bool]
 
-    orders: Mapped[list["Order"]] = relationship(back_populates="driver")
+    orders: Mapped[list["Order"]] = relationship(back_populates="driver", cascade="all, delete-orphan")
