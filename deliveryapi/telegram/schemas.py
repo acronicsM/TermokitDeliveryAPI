@@ -28,3 +28,22 @@ class ItemBase(BaseModel):
 class ItemShipped(BaseModel):
     id: int
     quantity_shipped: float
+
+
+class OrderCart(BaseModel):
+    id: int
+    orde_1c_number: str
+
+
+class ItemCart(ItemBase):
+    id: int
+
+
+class DriverCart(BaseModel):
+    id: int
+
+
+class Cart(BaseModel):
+    driver: DriverCart
+    order: OrderCart
+    items: list[ItemCart]
