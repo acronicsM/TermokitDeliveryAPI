@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from deliveryapi.core.models import db_helper, Driver, Order
@@ -9,6 +11,8 @@ from ..admin.orders.dependencies import order_by_id, order_by_id_search, order_b
 from . import crud, utils
 
 router = APIRouter(prefix="/tg/{driver_id}", tags=["Telegram"])
+
+templates = Jinja2Templates(directory="templates")
 
 
 @router.get(
@@ -94,6 +98,24 @@ async def get_driver_order_items(
     items = await crud.get_driver_order_item(session=session, order=order)
 
     return items
+
+
+@router.get(
+    path="/orders/{order_id}/cart",
+    description="Открывает страницу корзины",
+    name="Корзина",
+    response_class=HTMLResponse,
+)
+async def get_driver_order_items(
+    request: Request,
+    driver: Driver = Depends(driver_by_id),
+    order: Order = Depends(order_by_id),
+    session: AsyncSession = Depends(db_helper.sesion_dependency),
+):
+    order = utils.check_driver_order(driver=driver, order=order)
+    items = await crud.get_driver_order_item(session=session, order=order)
+
+    return templates.TemplateResponse("cart.html", {"request": request, "items": items})
 
 
 @router.post(
