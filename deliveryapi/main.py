@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.staticfiles import StaticFiles
 
 from deliveryapi.admin import router as router_admin
 from deliveryapi.telegram.views import router as router_tg
@@ -49,6 +50,8 @@ app = FastAPI(
     # lifespan=lifespan,
     openapi_tags=tags_metadata,
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(router_admin)
 app.include_router(router_tg)

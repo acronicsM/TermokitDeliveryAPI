@@ -28,4 +28,4 @@ class Order(Base):
     )
 
     driver: Mapped["Driver"] = relationship(back_populates="orders")
-    items: Mapped[list["Item"]] = relationship(back_populates="order")
+    items: Mapped[list["Item"]] = relationship(back_populates="order", cascade="all, delete-orphan")

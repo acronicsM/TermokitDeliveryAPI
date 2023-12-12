@@ -26,10 +26,11 @@ async def upload_deliveries(model_in: Model, session: AsyncSession) -> None:
             order.driver_id = driver.id
 
             session.add(order)
-            for item_data in order.items:
+            for item_data in order_data.items:
                 item = Item(**item_data.model_dump())
                 item.order_id = order.id
 
+                order.items.append(item)
                 session.add(item)
 
     await session.commit()
