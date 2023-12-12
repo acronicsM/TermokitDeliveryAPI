@@ -6,7 +6,10 @@ from .schemas import UserInfo, UserCreate
 from .dependencies import user_by_id
 from . import crud
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(
+    prefix="/users",
+    tags=["Users"],
+)
 
 
 @router.get(
@@ -15,7 +18,9 @@ router = APIRouter(prefix="/users", tags=["Users"])
     name="Список пользователей",
     response_model=list[UserInfo],
 )
-async def users(session: AsyncSession = Depends(db_helper.sesion_dependency)):
+async def users(
+    session: AsyncSession = Depends(db_helper.sesion_dependency),
+):
     return await crud.get_users(session)
 
 
@@ -25,7 +30,9 @@ async def users(session: AsyncSession = Depends(db_helper.sesion_dependency)):
     name="Данные пользователя",
     response_model=UserInfo,
 )
-async def user_detail(user: User = Depends(user_by_id)):
+async def user_detail(
+    user: User = Depends(user_by_id),
+):
     return user
 
 
@@ -35,7 +42,7 @@ async def user_detail(user: User = Depends(user_by_id)):
     name="Активность пользователя",
     response_model=UserInfo | None,
 )
-async def auth_driver(
+async def auth_user(
     is_active: bool,
     user: User = Depends(user_by_id),
     session: AsyncSession = Depends(db_helper.sesion_dependency),
