@@ -1,63 +1,10 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
-app = FastAPI()
 templates = Jinja2Templates(directory="templates")
-
-# Define SQLAlchemy models for the Cart and Item
-Base = declarative_base()
-
-
-class Order(Base):
-    __tablename__ = "orders"
-
-    id = Column(Integer, primary_key=True)
-    id_delivery = Column(String)
-    id_search_delivery = Column(String)
-    orde_1c_number = Column(String)
-    id_search = Column(String)
-    buyer = Column(String)
-    telephone = Column(String)
-    address = Column(String)
-    comment = Column(String)
-
-
-class Item(Base):
-    __tablename__ = "items"
-
-    id = Column(Integer, primary_key=True)
-    code_item = Column(String)
-    article_item = Column(String)
-    unit = Column(String)
-    name = Column(String)
-    quantity = Column(Float)
-    quantity_shipped = Column(Float)
-    price = Column(Float)
-    sum = Column(Float)
-    discount = Column(Float)
-    bonus = Column(Float)
-
-
-# Connect to the database
-engine = create_engine("sqlite:///cart.db")
-Base.metadata.create_all(bind=engine)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-# Pydantic models
-class OrderBase(BaseModel):
-    id_delivery: str
-    id_search_delivery: str
-    orde_1c_number: str
-    id_search: str
-    buyer: str
-    telephone: str
-    address: str
-    comment: str
 
 
 class ItemBase(BaseModel):
@@ -73,11 +20,6 @@ class ItemBase(BaseModel):
     bonus: float
 
 
-class ItemShipped(BaseModel):
-    id: int
-    quantity_shipped: float
-
-
 class OrderCart(BaseModel):
     id: int
     orde_1c_number: str
@@ -87,54 +29,80 @@ class ItemCart(ItemBase):
     id: int
 
 
+class DriverCart(BaseModel):
+    id: int
+
+
 class Cart(BaseModel):
+    driver: DriverCart
     order: OrderCart
     items: list[ItemCart]
 
 
-# Retrieve the Cart model from the database
-def get_cart_from_db():
-    db = SessionLocal()
-    order = db.query(Order).first()
-    items = db.query(Item).all()
-    db.close()
-
-    order_cart = OrderCart(id=order.id, orde_1c_number=order.orde_1c_number)
-    items_cart = [ItemCart(id=item.id, **item.__dict__) for item in items]
-
-    return Cart(order=order_cart, items=items_cart)
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# Update the Cart model in the database
-def update_cart_in_db(cart: Cart):
-    db = SessionLocal()
+@app.get(
+    path="/tg/123/orders/1/cart",
+    response_class=HTMLResponse,
+)
+async def get_driver_order_items(
+    request: Request,
+):
+    driver = DriverCart(id=123)
+    order = OrderCart(id=1, orde_1c_number="yyyy")
+    items = [
+        ItemCart(
+            id=1,
+            code_item="c",
+            article_item="a",
+            unit="u",
+            name="name",
+            quantity=20,
+            quantity_shipped=1,
+            price=1,
+            sum=1,
+            discount=1,
+            bonus=1,
+        ),
+        ItemCart(
+            id=2,
+            code_item="c",
+            article_item="a",
+            unit="u",
+            name="name",
+            quantity=20,
+            quantity_shipped=1,
+            price=1,
+            sum=1,
+            discount=1,
+            bonus=1,
+        ),
+        ItemCart(
+            id=3,
+            code_item="c",
+            article_item="a",
+            unit="u",
+            name="name",
+            quantity=1,
+            quantity_shipped=1,
+            price=1,
+            sum=1,
+            discount=1,
+            bonus=1,
+        ),
+    ]
 
-    order = db.query(Order).filter(Order.id == cart.order.id).first()
-    order.orde_1c_number = cart.order.orde_1c_number
+    cart = Cart(driver=driver, order=order, items=items)
 
-    for item_cart in cart.items:
-        item = db.query(Item).filter(Item.id == item_cart.id).first()
-        item.quantity_shipped = item_cart.quantity_shipped
-
-    db.commit()
-    db.close()
+    return templates.TemplateResponse("test2.html", {"request": request, "cart": cart})
 
 
-# Endpoint to display and process the Cart form
-@app.get("/")
-def display_cart(request: Request):
-    cart = get_cart_from_db()
-    return templates.TemplateResponse("cart.html", {"request": request, "cart": cart})
-
-
-@app.post("/")
-def save_cart(request: Request, cart: Cart):
-    update_cart_in_db(cart)
-    return templates.TemplateResponse("cart.html", {"request": request, "cart": cart})
-
-
-# Run the FastAPI application
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+@app.post(
+    path="/tg/123/orders/1/cart",
+)
+async def update_cart(request: Request):
+    form_data = await request.form()
+    print(form_data)
+    return 200

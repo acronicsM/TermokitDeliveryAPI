@@ -1,6 +1,4 @@
-from typing import Any
-
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -109,7 +107,7 @@ async def get_driver_order_items(
     name="Корзина",
     response_class=HTMLResponse,
 )
-async def get_driver_order_items(
+async def get_driver_order_cart(
     request: Request,
     driver: Driver = Depends(driver_by_id),
     order: Order = Depends(order_by_id),
@@ -124,22 +122,32 @@ async def get_driver_order_items(
         items=[utils.model_to_schema(i, ItemCart) for i in items],
     )
 
-    # cart_dict = cart.model_dump()
-    return templates.TemplateResponse("test.html", {"request": request, "cart": cart})
+    return templates.TemplateResponse("cart.html", {"request": request, "cart": cart})
 
 
 @router.post(
     path="/orders/{order_id}/cart",
-    # response_class=HTMLResponse,
+    description="Функиця возврата данных из формы корзины",
+    response_model=list[ItemBase],
 )
-async def update_cart(request: Request):
+async def update_cart(
+    request: Request,
+    driver: Driver = Depends(driver_by_id),
+    order: Order = Depends(order_by_id),
+    session: AsyncSession = Depends(db_helper.sesion_dependency),
+):
+    order = utils.check_driver_order(driver=driver, order=order)
+
     form_data = await request.form()
-    item1 = form_data.get("item1")
-    item2 = form_data.get("item2")
-    item3 = form_data.get("item3")
-    # mock_cart = cart
-    # return templates.TemplateResponse("test.html", {"request": request, "cart": mock_cart})
-    return 200
+
+    await crud.items_shipped(
+        session=session,
+        items=[ItemShipped(id=int(k.split("_")[1]), quantity_shipped=int(v)) for k, v in form_data.items()],
+    )
+
+    items = await crud.get_driver_order_item(session=session, order=order)
+
+    return items
 
 
 @router.post(
