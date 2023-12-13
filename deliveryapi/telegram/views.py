@@ -125,7 +125,7 @@ async def get_driver_order_items(
     )
 
     # cart_dict = cart.model_dump()
-    return templates.TemplateResponse("test.html", {"request": request, "cart": cart})
+    return templates.TemplateResponse("test2.html", {"request": request, "cart": cart})
 
 
 @router.post(
@@ -134,6 +134,7 @@ async def get_driver_order_items(
 )
 async def update_cart(request: Request):
     form_data = await request.form()
+    print(form_data)
     item1 = form_data.get("item1")
     item2 = form_data.get("item2")
     item3 = form_data.get("item3")

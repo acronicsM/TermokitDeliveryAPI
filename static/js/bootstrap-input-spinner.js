@@ -102,7 +102,7 @@
             if (this["bootstrap-input-spinner"]) {
                 console.warn("element", this, "is already a bootstrap-input-spinner")
             } else {
-
+                console.warn("element", this, "is dfdsfdsf a bootstrap-input-spinner")
                 var $original = $(this)
                 $original[0]["bootstrap-input-spinner"] = true
                 $original.hide()
@@ -204,7 +204,7 @@
                     }
                 })
                 onPointerUp(document.body, function () {
-                    if(pointerState === true) {
+                    if (pointerState === true) {
                         resetTimer()
                         dispatchEvent($original, "change")
                         pointerState = false
@@ -264,7 +264,7 @@
             function stepHandling(step) {
                 calcStep(step)
                 resetTimer()
-                if(props.autoInterval !== undefined) {
+                if (props.autoInterval !== undefined) {
                     autoDelayHandler = setTimeout(function () {
                         autoIntervalHandler = setInterval(function () {
                             calcStep(step)
