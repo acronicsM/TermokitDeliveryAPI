@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Request, Form
+from fastapi import APIRouter, Depends, status, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from deliveryapi.core.models import db_helper, Driver, Order
 from .schemas import OrderBase, ItemBase, ItemShipped, OrderCart, ItemCart, DriverCart, Cart
-
 from ..admin.drivers.dependencies import driver_by_id
 from ..admin.orders.dependencies import order_by_id, order_by_id_search, order_by_id_search_delivery
 from . import crud, utils
@@ -127,7 +126,7 @@ async def get_driver_order_cart(
 
 @router.post(
     path="/orders/{order_id}/cart",
-    description="Функиця возврата данных из формы корзины",
+    description="Функция возврата данных из формы корзины",
     response_model=list[ItemBase],
 )
 async def update_cart(

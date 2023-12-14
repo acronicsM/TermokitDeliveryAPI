@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from ..admin.drivers.schemas import DriverBase
+
 
 class TokenSchema(BaseModel):
     access_token: str
@@ -8,3 +10,7 @@ class TokenSchema(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+
+class DriverCreate(DriverBase):
+    pass
