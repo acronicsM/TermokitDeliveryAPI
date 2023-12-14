@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class OrderBase(BaseModel):
+    id: int
     id_delivery: str
     id_search_delivery: str
     orde_1c_number: str

@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class DriverBase(BaseModel):
     id: int
     name: str
-    auth: bool
+    auth: bool = False
 
 
 class DriverAuth(DriverBase):
